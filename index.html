@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Crud Operation in JavaScript</title>
+    <title>CRUD</title>
     <link type="text/css" rel="stylesheet" href="style.css">
 </head>
 
@@ -74,13 +74,48 @@
 
 
 
-<footer id="footer" style="text-align: center; color: white;">
-    <div class="container">
-        <div class="copyright">
-            &copy; All Rights Reserved 2025<strong></strong>
-        </div>
-        <div class="credits">
-            <strong>Made by </strong> <img width="15" alt="Beating Heart" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Beating_Heart.gif" /><a href="https://www.facebook.com/joelbdesquitado" style="color: deepskyblue; text-decoration: none;" target="_blank">Joel Desquitado</a>
-        </div>
-    </div>
+
+<!-- Site Footer -->
+<footer class="site-footer" style="background-color: #040b14; color: white; padding: 0; margin: 0; text-align: center;">
+  <div class="container" style="margin: 0; padding: 0;">
+    <p style="margin: 0; padding: 0;">
+      &copy; All Rights Reserved 2025 &nbsp;| &nbsp;
+
+      <strong><span id="heart-icon"></span></strong>Made by<img 
+      width="37" 
+      alt="Beating Heart" 
+      src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Beating_Heart.gif" 
+      style="display:inline-block; vertical-align:middle; margin:0; padding:0;" /><a 
+      href="https://www.facebook.com/joelbdesquitado" 
+      style="color:deepskyblue; text-decoration:none; margin:0; padding:0; display:inline-block; vertical-align:middle;" 
+      target="_blank">Joel Desquitado</a>
+    
+      <div class="visitor-counter" style="margin: 0; padding: 0;">
+        <img 
+          src="blinking_eye.gif" 
+          alt="Blinking Eye" 
+          width="16" 
+          style="vertical-align:middle;" />
+        <span id="visitorCount">Total Visitors:</span>
+        <span class="website-counter">1</span>
+      </div>
+      
+  <script>
+    function getVisitorCount() {
+      return localStorage.getItem('visitorCount') || 9991;
+    }
+    function incrementVisitorCount() {
+      let count = parseInt(getVisitorCount()) + 1;
+      localStorage.setItem('visitorCount', count);
+      return count;
+    }
+    function displayVisitorCount() {
+      const counterElement = document.querySelector('.website-counter');
+      const count = incrementVisitorCount();
+      counterElement.textContent = count;
+    }
+    document.addEventListener('DOMContentLoaded', displayVisitorCount);
+  </script>
 </footer>
+<!-- End Footer -->
+

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CRUD</title>
+
+    <!-- favicon (PNG) -->
+    <link rel="icon" type="image/png" href="./title.jpg">
+    <link rel="shortcut icon" type="image/png" href="./title.jpg">
+
+    <link type="text/css" rel="stylesheet" href="style.css">
+
+    <!-- Validation warning styles (desktop & mobile friendly) -->
+    <style>
+        /* small inline styles for the fullName warning */
+        .input-warning {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            color: #b71c1c;
+            font-size: .9rem;
+            /* slightly smaller */
+            margin-top: .35rem;
+        }
+
+        .input-warning svg {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+        }
+
+        .input-warning[hidden] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="page">
+    <header class="site-header">
+        <div class="header-inner">
+            <h1>CRUD Employee Directory</h1>
+            <p class="header-subtitle">Keep your team information organised and up to date in one place.</p>
+        </div>
+    </header>
+    <main class="app-container" aria-label="Employee management form and records">
+        <section class="panel form-panel" aria-labelledby="form-panel-title">
+            <div class="panel-header">
+                <h2 id="form-panel-title">Add or Update Employee</h2>
+                <p>Fill out the form and hit submit to create a new entry or update an existing one.</p>
+            </div>
+            <form autocomplete="off" onsubmit="onFormSubmit(event)" novalidate>
+                <div class="form-field">
+                    <label for="fullName">Full Name</label>
+                    <!-- updated input: added aria-describedby for the warning -->
+                    <input type="text" name="fullName" id="fullName" placeholder="e.g. Juan Dela Cruz" required
+                        aria-describedby="fullNameWarning" inputmode="text" />
+                    <!-- warning element shown when invalid (emoji/symbols/digits) -->
+                    <div id="fullNameWarning" class="input-warning" role="alert" aria-live="polite" hidden>
+                        <!-- SVG icon (exclamation) -->
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <path fill="#b71c1c"
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 13a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm1-9h-2v7h2V6z" />
+                        </svg>
+                        <span>Invalid Name: Please Use Letters Only (No Emoji, Symbols, or Numbers)</span>
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label for="empCode">Phone Number</label>
+                    <input type="text" name="empCode" id="empCode" placeholder="e.g. +63 900 000 0000" required>
+                </div>
+                <div class="form-field">
+                    <label for="salary">Salary</label>
+                    <input type="text" name="salary" id="salary" placeholder="e.g. ₱15,000" required>
+                </div>
+                <div class="form-field">
+                    <label for="city">City</label>
+                    <input type="text" name="city" id="city" placeholder="e.g. Quezon City" required>
+                </div>
+                <div class="form_action--button">
+                    <input type="submit" value="Submit">
+                    <input type="reset" value="Reset">
+                </div>
+            </form>
+        </section>
+        <section class="panel list-panel" aria-labelledby="list-panel-title">
+            <div class="panel-header">
+                <h2 id="list-panel-title">Employee Records</h2>
+                <p>New entries appear instantly. Tap or click a row to edit or delete the information.</p>
+            </div>
+            <div class="table-wrapper">
+                <table class="list" id="employeeList">
+                    <caption class="visually-hidden">Current employee records</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Salary</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span class="footer-meta">&copy; 2026 | Designed &amp; Developed by Joel Desquitado</span>
+            <div class="visitor-counter">
+                <img src="./blinking_eye.gif" alt="Blinking eye icon" width="25" height="17">
+                <span class="counter-label">Total Visitors:</span>
+                <span class="website-counter" aria-live="polite">9991</span>
+            </div>
+        </div>
+    </footer>
+    <script type="text/javascript" src="./script.js"></script>
+    <script>
+        // This script now uses our local counter.php to maintain a synchronized visitor counter.
+        (function () {
+            const counterElement = document.querySelector('.website-counter');
+            if (!counterElement) return;
+
+            // The URL to our local PHP script
+            const apiUrl = 'counter.php';
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Our PHP script returns a JSON object like { "value": 123 }
+                    counterElement.textContent = data.value;
+                })
+                .catch(error => {
+                    console.error('Visitor counter failed:', error);
+                });
+        })();
+    </script>
+
+    <!-- New validation script: validates Full Name and prevents submission if invalid -->
+    <script>
+        (function () {
+            // allow Unicode letters, spaces, apostrophe, hyphen and dot only
+            const namePattern = /^[\p{L}\s'.-]+$/u; // Note: \p{L} matches any Unicode letter
+
+            const fullNameInput = document.getElementById('fullName');
+            const warningEl = document.getElementById('fullNameWarning');
+            const form = fullNameInput && fullNameInput.form;
+
+            if (!fullNameInput || !form) return;
+
+            function showWarning(message) {
+                if (!warningEl) return;
+                warningEl.querySelector('span').textContent = message;
+                warningEl.hidden = false;
+            }
+
+            function hideWarning() {
+                if (!warningEl) return;
+                warningEl.hidden = true;
+            }
+
+            function validateFullName() {
+                const val = (fullNameInput.value || '').trim();
+                // empty value: let required attribute handle it; clear custom validity
+                if (val === '') {
+                    fullNameInput.setCustomValidity('');
+                    hideWarning();
+                    return true;
+                }
+                if (!namePattern.test(val)) {
+                    fullNameInput.setCustomValidity('Invalid name: contains unsupported characters.');
+                    showWarning('Invalid Name: Please Use Letters Only (No Emoji, Symbols, or Numbers)');
+                    return false;
+                }
+                fullNameInput.setCustomValidity('');
+                hideWarning();
+                return true;
+            }
+
+            // live feedback while typing
+            fullNameInput.addEventListener('input', validateFullName);
+            fullNameInput.addEventListener('blur', validateFullName);
+
+            // prevent submit if invalid (runs before inline onsubmit handler)
+            form.addEventListener('submit', function (e) {
+                if (!validateFullName()) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    fullNameInput.focus();
+                }
+            }, true);
+        })();
+    </script>
+
+</body>
+
+</html>
